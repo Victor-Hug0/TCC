@@ -6,6 +6,7 @@ import com.victor.TCC.dto.request.RegisterUserRequest;
 import com.victor.TCC.dto.response.LoginResponse;
 import com.victor.TCC.dto.response.RegisterUserResponse;
 import com.victor.TCC.entity.User;
+import com.victor.TCC.entity.UserRole;
 import com.victor.TCC.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
@@ -57,9 +60,10 @@ public class AuthController {
         user.setName(registerUserRequest.name());
         user.setEmail(registerUserRequest.email());
         user.setPassword(passwordEncoder.encode(registerUserRequest.password()));
+        user.setRoles(Set.of(UserRole.CUSTOMER));
 
         userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new RegisterUserResponse(user.getName(), user.getEmail()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new RegisterUserResponse(user.getId(), user.getName(), user.getEmail(), user.getRoles().stream().toList()));
     }
 }
